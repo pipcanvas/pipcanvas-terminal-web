@@ -127,6 +127,7 @@ const goToPreviousPage = () => {
         </div>
 
         <div v-if="totalPages > 1" class="flex justify-center pt-2">
+          <Pagination>
           <PaginationContent>
             <PaginationPrevious
               :disabled="currentPage === 1"
@@ -145,6 +146,7 @@ const goToPreviousPage = () => {
               @click="goToNextPage"
             />
           </PaginationContent>
+            </Pagination>
         </div>
       </div>
     </PopoverContent>
