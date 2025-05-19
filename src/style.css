@@ -71,6 +71,6 @@ layer(theme);
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full;
+    @apply bg-neutral-400 rounded-full;
   }
 }
