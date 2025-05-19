@@ -2,15 +2,11 @@
 import { ref } from 'vue'
 import { Moon, Sun, BellRing, User, Settings } from 'lucide-vue-next'
 import { useMarketStore } from '@/stores/market'
+import { useTheme } from '@/composables/useTheme'
 
 const marketStore = useMarketStore()
-const isDarkMode = ref(true)
 const notifications = ref(2)
-
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value
-  // In a real implementation, this would toggle the dark mode class
-}
+const { isDark, toggleTheme } = useTheme()
 </script>
 
 <template>
@@ -35,7 +31,7 @@ const toggleTheme = () => {
       </div>
       
       <button @click="toggleTheme" class="p-1 rounded-md hover:bg-secondary transition-colors">
-        <Sun v-if="isDarkMode" class="h-5 w-5" />
+        <Sun v-if="isDark" class="h-5 w-5" />
         <Moon v-else class="h-5 w-5" />
       </button>
       
