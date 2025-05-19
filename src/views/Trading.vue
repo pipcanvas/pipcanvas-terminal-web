@@ -101,9 +101,9 @@ const onLayoutUpdated = (newLayout: any) => {
   @apply rounded-lg;
 } */
 
-:deep(.vue-grid-item.vue-draggable-dragging) {
+/* :deep(.vue-grid-item.vue-draggable-dragging) {
   @apply shadow-lg z-50;
-}
+} */
 
 :deep(.vue-resizable-handle) {
   @apply opacity-0 transition-opacity duration-200;
