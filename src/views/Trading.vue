@@ -97,9 +97,9 @@ const onLayoutUpdated = (newLayout: any) => {
   @apply bg-primary/20 rounded-lg border-2 border-primary/50;
 } */
 
-:deep(.vue-grid-item:not(.vue-grid-placeholder)) {
+/* :deep(.vue-grid-item:not(.vue-grid-placeholder)) {
   @apply rounded-lg;
-}
+} */
 
 :deep(.vue-grid-item.vue-draggable-dragging) {
   @apply shadow-lg z-50;
