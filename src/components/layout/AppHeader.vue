@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Moon, Sun, BellRing, User, Settings } from 'lucide-vue-next'
+import { Moon, Sun, User, Settings } from 'lucide-vue-next'
 import { useMarketStore } from '@/stores/market'
 import { useTheme } from '@/composables/useTheme'
+import NotificationList from '@/components/notifications/NotificationList.vue'
 
 const marketStore = useMarketStore()
-const notifications = ref(2)
 const { isDark, toggleTheme } = useTheme()
 </script>
 
@@ -23,12 +23,7 @@ const { isDark, toggleTheme } = useTheme()
     </div>
     
     <div class="flex items-center gap-4">
-      <div class="relative">
-        <BellRing class="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-        <span v-if="notifications > 0" class="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold">
-          {{ notifications }}
-        </span>
-      </div>
+      <NotificationList />
       
       <button @click="toggleTheme" class="p-1 rounded-md hover:bg-secondary transition-colors">
         <Sun v-if="isDark" class="h-5 w-5" />

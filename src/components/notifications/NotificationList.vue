@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Bell } from 'lucide-vue-next'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-import { Pagination } from '@/components/ui/pagination'
+import { PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 
 interface Notification {
   id: number
@@ -28,7 +28,34 @@ const notifications = ref<Notification[]>([
     time: '5 minutes ago',
     read: false
   },
-  // Add more notifications as needed
+  {
+    id: 3,
+    title: 'Funding Payment',
+    message: 'Received funding payment of $12.45 for BTCUSDT',
+    time: '15 minutes ago',
+    read: false
+  },
+  {
+    id: 4,
+    title: 'Position Liquidation Warning',
+    message: 'ETHUSDT position approaching liquidation price',
+    time: '30 minutes ago',
+    read: true
+  },
+  {
+    id: 5,
+    title: 'Market Alert',
+    message: 'BTC volatility increasing, consider adjusting positions',
+    time: '45 minutes ago',
+    read: true
+  },
+  {
+    id: 6,
+    title: 'System Update',
+    message: 'Platform maintenance scheduled in 2 hours',
+    time: '1 hour ago',
+    read: true
+  }
 ])
 
 const currentPage = ref(1)
@@ -51,6 +78,18 @@ const markAsRead = (id: number) => {
     notification.read = true
   }
 }
+
+const goToNextPage = () => {
+  if (currentPage.value < totalPages) {
+    currentPage.value++
+  }
+}
+
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
 </script>
 
 <template>
@@ -68,7 +107,11 @@ const markAsRead = (id: number) => {
     </PopoverTrigger>
     <PopoverContent class="w-80">
       <div class="flex flex-col space-y-4">
-        <h3 class="font-semibold">Notifications</h3>
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold">Notifications</h3>
+          <span class="text-xs text-muted-foreground">{{ unreadCount }} unread</span>
+        </div>
+        
         <div class="space-y-2">
           <div
             v-for="notification in paginatedNotifications"
@@ -82,12 +125,27 @@ const markAsRead = (id: number) => {
             <div class="text-xs text-muted-foreground mt-1">{{ notification.time }}</div>
           </div>
         </div>
-        <Pagination
-          v-if="totalPages > 1"
-          v-model="currentPage"
-          :total-pages="totalPages"
-          class="justify-center"
-        />
+
+        <div v-if="totalPages > 1" class="flex justify-center pt-2">
+          <PaginationContent>
+            <PaginationPrevious
+              :disabled="currentPage === 1"
+              @click="goToPreviousPage"
+            />
+            <PaginationItem
+              v-for="page in totalPages"
+              :key="page"
+              :is-active="currentPage === page"
+              @click="currentPage = page"
+            >
+              {{ page }}
+            </PaginationItem>
+            <PaginationNext
+              :disabled="currentPage === totalPages"
+              @click="goToNextPage"
+            />
+          </PaginationContent>
+        </div>
       </div>
     </PopoverContent>
   </Popover>
