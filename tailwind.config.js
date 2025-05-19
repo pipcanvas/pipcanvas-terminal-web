@@ -36,7 +36,7 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
-          background: "hsl(var(--muted))" // Added background color for bg-muted utility
+          background: "hsl(var(--muted))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -58,8 +58,16 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
-        gain: "hsl(var(--gain))",
-        loss: "hsl(var(--loss))",
+        gain: {
+          DEFAULT: "hsl(var(--gain))",
+          light: "hsl(var(--gain-light))",
+          dark: "hsl(var(--gain-dark))",
+        },
+        loss: {
+          DEFAULT: "hsl(var(--loss))",
+          light: "hsl(var(--loss-light))",
+          dark: "hsl(var(--loss-dark))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
