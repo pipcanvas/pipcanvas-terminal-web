@@ -106,7 +106,7 @@ const formatVolume = (volume: number) => {
 </script>
 
 <template>
-      <Button variant="ghost" class="gap-2">
+      <Button variant="ghost" class="gap-2" @click.stop="toggleFavorite(currentAsset?.symbol)">
         <Star
           class="h-4 w-4"
           :class="currentAsset?.isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'"
