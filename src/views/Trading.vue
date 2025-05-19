@@ -94,7 +94,7 @@ const onLayoutUpdated = (newLayout: any) => {
 }
 
 :deep(.vue-grid-item.vue-grid-placeholder) {
-  @apply bg-primary-20 rounded-lg border-2 border-primary-50;
+  @apply bg-primary rounded-lg border-2 border-primary-50;
 }
 
 :deep(.vue-grid-item:not(.vue-grid-placeholder)) {
