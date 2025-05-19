@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { Bell } from 'lucide-vue-next'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+  import { PaginationRoot } from 'reka-ui'
 import { PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 
 interface Notification {
@@ -127,7 +128,7 @@ const goToPreviousPage = () => {
         </div>
 
         <div v-if="totalPages > 1" class="flex justify-center pt-2">
-          <Pagination>
+          <PaginationRoot>
           <PaginationContent>
             <PaginationPrevious
               :disabled="currentPage === 1"
@@ -146,7 +147,7 @@ const goToPreviousPage = () => {
               @click="goToNextPage"
             />
           </PaginationContent>
-            </Pagination>
+            </PaginationRoot>
         </div>
       </div>
     </PopoverContent>
