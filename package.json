@@ -46,9 +46,9 @@
     "autoprefixer": "^10.4.16",
     "@types/node": "^20.10.0"
   },
-    "optionalDependencies": {
-        "@rollup/rollup-linux-x64-gnu": "4.9.5",
-        "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
-        "lightningcss-linux-x64-gnu": "^1.29.1"
-    }c
+  "optionalDependencies": {
+      "@rollup/rollup-linux-x64-gnu": "4.9.5",
+      "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
+      "lightningcss-linux-x64-gnu": "^1.29.1"
+  }
 }
