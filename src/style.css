@@ -3,16 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-:root {
+  :root {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
   
@@ -52,12 +43,29 @@
   --radius: 0.5rem;
 }
 
-body {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  body {
   @apply bg-background text-foreground;
   font-feature-settings: "rlig" 1, "calt" 1;
 }
+}
 
 @layer utilities {
+  body,
+  html {
+    --font-sans:
+      'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+      'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+      'Noto Color Emoji';
+  }
+  
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
