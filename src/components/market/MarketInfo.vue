@@ -1,15 +1,36 @@
-```vue
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Star } from 'lucide-vue-next'
 import { useMarketStore } from '@/stores/market'
 import AssetWatchlist from './AssetWatchlist.vue'
+import { Button } from '@/components/ui/button'
 
 const marketStore = useMarketStore()
+
+const toggleFavorite = () => {
+  marketStore.toggleFavorite(marketStore.currentSymbol)
+}
+
+const isFavorite = computed(() => {
+  return marketStore.isFavorite(marketStore.currentSymbol)
+})
 </script>
 
 <template>
   <div class="h-full w-full flex items-center border border-border rounded-md px-4">
     <div class="flex items-center gap-2">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        class="h-8 w-8"
+        @click="toggleFavorite"
+      >
+        <Star
+          class="h-4 w-4"
+          :class="isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'"
+        />
+      </Button>
+
       <AssetWatchlist />
       
       <div 
@@ -67,4 +88,3 @@ const marketStore = useMarketStore()
     </div>
   </div>
 </template>
-```
