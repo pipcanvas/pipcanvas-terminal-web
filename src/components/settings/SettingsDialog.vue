@@ -1,3 +1,4 @@
+```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Settings, Bell, Volume2, AlertTriangle, Eye, LineChart, Wallet, Calculator, ChevronRight } from 'lucide-vue-next'
@@ -179,7 +180,7 @@ const toggleSetting = (settingId: string) => {
       isDark ? 'dark' : ''
     ]">
       <DialogHeader class="p-6 border-b border-border">
-        <DialogTitle>Settings</DialogTitle>
+        <DialogTitle class="text-foreground">Settings</DialogTitle>
       </DialogHeader>
       
       <div class="flex h-[600px]">
@@ -224,7 +225,10 @@ const toggleSetting = (settingId: string) => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  :class="setting.value ? 'bg-primary text-primary-foreground' : ''"
+                  :class="[
+                    setting.value ? 'bg-primary text-primary-foreground hover:bg-primary/90' : '',
+                    'transition-colors'
+                  ]"
                   @click="toggleSetting(setting.id)"
                 >
                   {{ setting.value ? 'Enabled' : 'Disabled' }}
@@ -241,3 +245,4 @@ const toggleSetting = (settingId: string) => {
     </DialogContent>
   </Dialog>
 </template>
+```
