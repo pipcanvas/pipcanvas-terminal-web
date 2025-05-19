@@ -1,6 +1,5 @@
-```vue
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Search, Star, ChevronDown } from 'lucide-vue-next'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
@@ -61,18 +60,25 @@ const currentAsset = computed(() => {
 })
 
 // Load more assets on scroll
-const { el: scrollEl } = useInfiniteScroll(
-  async () => {
-    if (loading.value) return
-    
-    loading.value = true
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    page.value++
-    loading.value = false
-  },
-  { distance: 10 }
-)
+const scrollEl = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  if (scrollEl.value) {
+    useInfiniteScroll(
+      scrollEl,
+      async () => {
+        if (loading.value) return
+        
+        loading.value = true
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        page.value++
+        loading.value = false
+      },
+      { distance: 10 }
+    )
+  }
+})
 
 const toggleFavorite = (symbol: string) => {
   const asset = allAssets.value.find(a => a.symbol === symbol)
@@ -204,4 +210,3 @@ const formatVolume = (volume: number) => {
     </PopoverContent>
   </Popover>
 </template>
-```
