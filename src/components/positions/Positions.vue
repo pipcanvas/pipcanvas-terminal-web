@@ -117,7 +117,7 @@ const positionHistory = ref<PositionHistory[]>([
 ])
 
 // Sample open orders data
-const openOrders = ref<Order[]>([
+const openOrders = ref([
   {
     id: '125463892',
     symbol: 'BTCUSDT',
@@ -145,7 +145,7 @@ const openOrders = ref<Order[]>([
 ])
 
 // Sample order history data
-const orderHistory = ref<Order[]>([
+const orderHistory = ref([
   {
     id: '125463890',
     symbol: 'ETHUSDT',
@@ -220,8 +220,7 @@ const cancelOrder = (id: string) => {
             Open Positions
             <Badge 
               v-if="positions.length > 0"
-              variant="secondary"
-              class="ml-1"
+              :variant="activeTab === 'positions' ? 'primary' : 'secondary'"
             >
               {{ positions.length }}
             </Badge>
@@ -247,8 +246,7 @@ const cancelOrder = (id: string) => {
             Open Orders
             <Badge 
               v-if="openOrders.length > 0"
-              variant="secondary"
-              class="ml-1"
+              :variant="activeTab === 'open-orders' ? 'primary' : 'secondary'"
             >
               {{ openOrders.length }}
             </Badge>
