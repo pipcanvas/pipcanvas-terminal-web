@@ -84,7 +84,7 @@
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full;
+    @apply rounded-full;
   }
   
   .bg-gain-gradient {
