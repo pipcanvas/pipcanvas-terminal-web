@@ -1,10 +1,10 @@
+```vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import TradingViewChart from '@/components/chart/TradingViewChart.vue'
-import OrderBook from '@/components/orderbook/OrderBook.vue'
 import OrderEntry from '@/components/order/OrderEntry.vue'
 import MarketInfo from '@/components/market/MarketInfo.vue'
-import TradeHistory from '@/components/trades/TradeHistory.vue'
+import MarketData from '@/components/market/MarketData.vue'
 import Positions from '@/components/positions/Positions.vue'
 import { useMarketStore } from '@/stores/market'
 
@@ -43,20 +43,15 @@ onMounted(() => {
     </div>
     
     <!-- Right sidebar -->
-    <div class="w-[400px] flex flex-col gap-2 min-h-0">
-      <!-- Order entry panel -->
-      <div class="flex-1 min-h-0">
-        <OrderEntry />
+    <div class="w-[800px] flex gap-2 min-h-0">
+      <!-- Market data (Order book + Trade history) -->
+      <div class="w-[400px] min-h-0">
+        <MarketData />
       </div>
       
-      <!-- Order book and trade history -->
-      <div class="h-[600px] grid grid-rows-2 gap-2">
-        <div class="min-h-0 overflow-hidden">
-          <OrderBook />
-        </div>
-        <div class="min-h-0 overflow-hidden">
-          <TradeHistory />
-        </div>
+      <!-- Order entry panel -->
+      <div class="w-[400px] min-h-0">
+        <OrderEntry />
       </div>
     </div>
   </div>
@@ -69,3 +64,4 @@ onMounted(() => {
   opacity: v-bind(isLayoutReady ? 1 : 0);
 }
 </style>
+```

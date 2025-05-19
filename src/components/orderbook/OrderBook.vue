@@ -1,3 +1,4 @@
+```vue
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ArrowDown, ArrowUp, BarChart2 } from 'lucide-vue-next'
@@ -96,35 +97,33 @@ const changeGrouping = (value: number) => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col rounded-md border border-border">
-    <div class="px-3 py-2 border-b border-border flex items-center justify-between">
-      <div class="font-medium">Order Book</div>
+  <div class="h-full w-full flex flex-col">
+    <div class="flex items-center justify-between px-3 py-2">
+      <div class="flex border border-border rounded-md overflow-hidden">
+        <button 
+          @click="changeGrouping(0.01)" 
+          class="px-2 py-0.5 text-xs"
+          :class="grouping === 0.01 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
+        >
+          0.01
+        </button>
+        <button 
+          @click="changeGrouping(0.1)" 
+          class="px-2 py-0.5 text-xs"
+          :class="grouping === 0.1 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
+        >
+          0.1
+        </button>
+        <button 
+          @click="changeGrouping(1)" 
+          class="px-2 py-0.5 text-xs"
+          :class="grouping === 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
+        >
+          1
+        </button>
+      </div>
       
       <div class="flex items-center gap-2">
-        <div class="flex border border-border rounded-md overflow-hidden">
-          <button 
-            @click="changeGrouping(0.01)" 
-            class="px-2 py-0.5 text-xs"
-            :class="grouping === 0.01 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
-          >
-            0.01
-          </button>
-          <button 
-            @click="changeGrouping(0.1)" 
-            class="px-2 py-0.5 text-xs"
-            :class="grouping === 0.1 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
-          >
-            0.1
-          </button>
-          <button 
-            @click="changeGrouping(1)" 
-            class="px-2 py-0.5 text-xs"
-            :class="grouping === 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary text-muted-foreground'"
-          >
-            1
-          </button>
-        </div>
-        
         <button @click="increaseDepth" class="p-1 rounded hover:bg-secondary text-muted-foreground">
           <ArrowDown class="h-4 w-4" />
         </button>
@@ -185,3 +184,4 @@ const changeGrouping = (value: number) => {
     </div>
   </div>
 </template>
+```

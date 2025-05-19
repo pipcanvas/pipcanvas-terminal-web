@@ -1,3 +1,4 @@
+```vue
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useMarketStore } from '@/stores/market'
@@ -68,11 +69,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col rounded-md border border-border">
-    <div class="px-3 py-2 border-b border-border">
-      <div class="font-medium">Recent Trades</div>
-    </div>
-    
+  <div class="h-full w-full flex flex-col">
     <div class="flex-1 overflow-hidden">
       <table class="w-full">
         <thead class="text-xs text-muted-foreground sticky top-0 bg-background">
@@ -104,3 +101,4 @@ onMounted(() => {
     </div>
   </div>
 </template>
+```
