@@ -1,24 +1,169 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Settings } from 'lucide-vue-next'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Settings, Bell, Volume2, AlertTriangle, Eye, LineChart, Wallet, Calculator, ChevronRight } from 'lucide-vue-next'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/composables/useTheme'
 
 const { isDark } = useTheme()
 
-const preferences = ref({
-  notifications: true,
-  soundAlerts: true,
-  tradeConfirmations: true,
-  hideBalances: false,
-  chartAutoScale: true,
-  showLiquidationLevels: true,
-  showPnLInBTC: false
-})
+interface SettingCategory {
+  id: string
+  title: string
+  icon: any
+  description: string
+  settings: Setting[]
+}
 
-const togglePreference = (key: keyof typeof preferences.value) => {
-  preferences.value[key] = !preferences.value[key]
+interface Setting {
+  id: string
+  title: string
+  description: string
+  value: boolean
+}
+
+const categories = ref<SettingCategory[]>([
+  {
+    id: 'notifications',
+    title: 'Notifications',
+    icon: Bell,
+    description: 'Configure how you want to be notified about trading events',
+    settings: [
+      {
+        id: 'push-notifications',
+        title: 'Push Notifications',
+        description: 'Receive notifications for important trading events',
+        value: true
+      },
+      {
+        id: 'email-notifications',
+        title: 'Email Notifications',
+        description: 'Receive email updates for significant account events',
+        value: false
+      },
+      {
+        id: 'price-alerts',
+        title: 'Price Alerts',
+        description: 'Get notified when price targets are reached',
+        value: true
+      }
+    ]
+  },
+  {
+    id: 'sounds',
+    title: 'Sound Alerts',
+    icon: Volume2,
+    description: 'Manage sound notifications for trading events',
+    settings: [
+      {
+        id: 'order-filled',
+        title: 'Order Filled',
+        description: 'Play sound when an order is filled',
+        value: true
+      },
+      {
+        id: 'position-closed',
+        title: 'Position Closed',
+        description: 'Play sound when a position is closed',
+        value: true
+      },
+      {
+        id: 'liquidation-warning',
+        title: 'Liquidation Warning',
+        description: 'Play sound when approaching liquidation price',
+        value: true
+      }
+    ]
+  },
+  {
+    id: 'trading',
+    title: 'Trading Preferences',
+    icon: AlertTriangle,
+    description: 'Configure trading behavior and confirmations',
+    settings: [
+      {
+        id: 'confirm-orders',
+        title: 'Confirm Orders',
+        description: 'Show confirmation dialog before placing orders',
+        value: true
+      },
+      {
+        id: 'confirm-close',
+        title: 'Confirm Position Close',
+        description: 'Show confirmation dialog before closing positions',
+        value: true
+      },
+      {
+        id: 'default-leverage',
+        title: 'Remember Leverage',
+        description: 'Save last used leverage for each trading pair',
+        value: false
+      }
+    ]
+  },
+  {
+    id: 'display',
+    title: 'Display Settings',
+    icon: Eye,
+    description: 'Customize how trading information is displayed',
+    settings: [
+      {
+        id: 'hide-balances',
+        title: 'Hide Balances',
+        description: 'Hide account balance information',
+        value: false
+      },
+      {
+        id: 'compact-mode',
+        title: 'Compact Mode',
+        description: 'Use compact layout for order book and trades',
+        value: false
+      },
+      {
+        id: 'show-liquidations',
+        title: 'Show Liquidations',
+        description: 'Display liquidation prices on chart',
+        value: true
+      }
+    ]
+  },
+  {
+    id: 'chart',
+    title: 'Chart Preferences',
+    icon: LineChart,
+    description: 'Configure chart behavior and appearance',
+    settings: [
+      {
+        id: 'auto-scale',
+        title: 'Auto Scale',
+        description: 'Automatically adjust chart scale',
+        value: true
+      },
+      {
+        id: 'show-grid',
+        title: 'Show Grid',
+        description: 'Display grid lines on chart',
+        value: true
+      },
+      {
+        id: 'trading-view-style',
+        title: 'TradingView Style',
+        description: 'Use TradingView-like appearance',
+        value: true
+      }
+    ]
+  }
+])
+
+const selectedCategory = ref<SettingCategory | null>(null)
+
+const toggleSetting = (settingId: string) => {
+  categories.value.forEach(category => {
+    const setting = category.settings.find(s => s.id === settingId)
+    if (setting) {
+      setting.value = !setting.value
+    }
+  })
 }
 </script>
 
@@ -29,118 +174,67 @@ const togglePreference = (key: keyof typeof preferences.value) => {
         <Settings class="h-5 w-5" />
       </Button>
     </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
-      <DialogHeader>
+    <DialogContent :class="[
+      'sm:max-w-[900px] p-0 gap-0',
+      isDark ? 'dark' : ''
+    ]">
+      <DialogHeader class="p-6 border-b border-border">
         <DialogTitle>Settings</DialogTitle>
-        <DialogDescription>
-          Configure your trading preferences and notifications.
-        </DialogDescription>
       </DialogHeader>
-      <div class="grid gap-4 py-4">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Notifications</div>
-              <div class="text-xs text-muted-foreground">Receive trading notifications</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.notifications ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('notifications')"
+      
+      <div class="flex h-[600px]">
+        <!-- Categories List -->
+        <div class="w-[280px] border-r border-border">
+          <div class="py-2">
+            <button
+              v-for="category in categories"
+              :key="category.id"
+              class="w-full px-4 py-3 flex items-center gap-3 hover:bg-muted/50 transition-colors"
+              :class="selectedCategory?.id === category.id ? 'bg-muted' : ''"
+              @click="selectedCategory = category"
             >
-              {{ preferences.notifications ? 'Enabled' : 'Disabled' }}
-            </Button>
+              <component :is="category.icon" class="h-5 w-5 text-muted-foreground" />
+              <div class="flex-1 text-left">
+                <div class="text-sm font-medium">{{ category.title }}</div>
+                <div class="text-xs text-muted-foreground">{{ category.description }}</div>
+              </div>
+              <ChevronRight class="h-4 w-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+        
+        <!-- Settings Detail -->
+        <div class="flex-1 p-6">
+          <div v-if="selectedCategory" class="space-y-6">
+            <div class="space-y-1">
+              <h2 class="text-lg font-semibold">{{ selectedCategory.title }}</h2>
+              <p class="text-sm text-muted-foreground">{{ selectedCategory.description }}</p>
+            </div>
+            
+            <div class="space-y-4">
+              <div
+                v-for="setting in selectedCategory.settings"
+                :key="setting.id"
+                class="flex items-start justify-between gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+              >
+                <div class="space-y-1">
+                  <div class="text-sm font-medium">{{ setting.title }}</div>
+                  <div class="text-sm text-muted-foreground">{{ setting.description }}</div>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  :class="setting.value ? 'bg-primary text-primary-foreground' : ''"
+                  @click="toggleSetting(setting.id)"
+                >
+                  {{ setting.value ? 'Enabled' : 'Disabled' }}
+                </Button>
+              </div>
+            </div>
           </div>
           
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Sound Alerts</div>
-              <div class="text-xs text-muted-foreground">Play sounds for important events</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.soundAlerts ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('soundAlerts')"
-            >
-              {{ preferences.soundAlerts ? 'Enabled' : 'Disabled' }}
-            </Button>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Trade Confirmations</div>
-              <div class="text-xs text-muted-foreground">Show confirmation dialog before trades</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.tradeConfirmations ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('tradeConfirmations')"
-            >
-              {{ preferences.tradeConfirmations ? 'Enabled' : 'Disabled' }}
-            </Button>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Hide Balances</div>
-              <div class="text-xs text-muted-foreground">Hide account balance information</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.hideBalances ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('hideBalances')"
-            >
-              {{ preferences.hideBalances ? 'Hidden' : 'Visible' }}
-            </Button>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Chart Auto-scale</div>
-              <div class="text-xs text-muted-foreground">Automatically adjust chart scale</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.chartAutoScale ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('chartAutoScale')"
-            >
-              {{ preferences.chartAutoScale ? 'Enabled' : 'Disabled' }}
-            </Button>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">Liquidation Levels</div>
-              <div class="text-xs text-muted-foreground">Show liquidation prices on chart</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.showLiquidationLevels ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('showLiquidationLevels')"
-            >
-              {{ preferences.showLiquidationLevels ? 'Visible' : 'Hidden' }}
-            </Button>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="text-sm font-medium">PnL Display</div>
-              <div class="text-xs text-muted-foreground">Show PnL in BTC instead of USDT</div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :class="preferences.showPnLInBTC ? 'bg-primary text-primary-foreground' : ''"
-              @click="togglePreference('showPnLInBTC')"
-            >
-              {{ preferences.showPnLInBTC ? 'In BTC' : 'In USDT' }}
-            </Button>
+          <div v-else class="h-full flex items-center justify-center text-muted-foreground">
+            Select a category to view and edit settings
           </div>
         </div>
       </div>
