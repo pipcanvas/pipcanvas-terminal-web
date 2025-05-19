@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { GridLayout, GridItem } from 'vue-grid-layout'
 import TradingViewChart from '@/components/chart/TradingViewChart.vue'
 import OrderBook from '@/components/orderbook/OrderBook.vue'
 import OrderEntry from '@/components/order/OrderEntry.vue'
@@ -12,16 +11,6 @@ import { useMarketStore } from '@/stores/market'
 const marketStore = useMarketStore()
 const isLayoutReady = ref(false)
 
-// Define the layout configuration
-const layout = ref([
-  { i: 'market-info', x: 0, y: 0, w: 12, h: 2, static: true },
-  { i: 'chart', x: 0, y: 2, w: 8, h: 16 },
-  { i: 'orderbook', x: 8, y: 2, w: 4, h: 8 },
-  { i: 'trades', x: 8, y: 10, w: 4, h: 8 },
-  { i: 'order-entry', x: 0, y: 18, w: 6, h: 8 },
-  { i: 'positions', x: 6, y: 18, w: 6, h: 8 }
-])
-
 onMounted(() => {
   // Initialize market data
   marketStore.initMarketData()
@@ -31,75 +20,46 @@ onMounted(() => {
     isLayoutReady.value = true
   }, 100)
 })
-
-const onLayoutUpdated = (newLayout: any) => {
-  layout.value = newLayout
-}
 </script>
 
 <template>
-  <div class="h-full w-full p-2">
-    <GridLayout
-      v-model:layout="layout"
-      :col-num="12"
-      :row-height="30"
-      :margin="[8, 8]"
-      :use-css-transforms="true"
-      :vertical-compact="true"
-      :responsive="true"
-      class="min-h-full"
-      @layout-updated="onLayoutUpdated"
-    >
-      <!-- Market Info -->
-      <GridItem :i="layout[0].i" :x="layout[0].x" :y="layout[0].y" :w="layout[0].w" :h="layout[0].h">
-        <MarketInfo />
-      </GridItem>
-
-      <!-- Chart -->
-      <GridItem :i="layout[1].i" :x="layout[1].x" :y="layout[1].y" :w="layout[1].w" :h="layout[1].h">
-        <TradingViewChart />
-      </GridItem>
-
-      <!-- Order Book -->
-      <GridItem :i="layout[2].i" :x="layout[2].x" :y="layout[2].y" :w="layout[2].w" :h="layout[2].h">
+  <div class="h-full w-full grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-2 p-2">
+    <!-- Market info bar -->
+    <div class="col-span-12 h-16">
+      <MarketInfo />
+    </div>
+    
+    <!-- Main content area -->
+    <div class="col-span-12 lg:col-span-8 row-span-1 min-h-0">
+      <TradingViewChart />
+    </div>
+    
+    <!-- Right sidebar for order book and history -->
+    <div class="col-span-12 lg:col-span-4 row-span-1 grid grid-rows-2 gap-2 min-h-0">
+      <div class="min-h-0 overflow-hidden">
         <OrderBook />
-      </GridItem>
-
-      <!-- Trade History -->
-      <GridItem :i="layout[3].i" :x="layout[3].x" :y="layout[3].y" :w="layout[3].w" :h="layout[3].h">
+      </div>
+      <div class="min-h-0 overflow-hidden">
         <TradeHistory />
-      </GridItem>
-
-      <!-- Order Entry -->
-      <GridItem :i="layout[4].i" :x="layout[4].x" :y="layout[4].y" :w="layout[4].w" :h="layout[4].h">
+      </div>
+    </div>
+    
+    <!-- Bottom panel for order entry and positions -->
+    <div class="col-span-12 h-[280px] grid grid-cols-12 gap-2">
+      <div class="col-span-12 lg:col-span-6 h-full">
         <OrderEntry />
-      </GridItem>
-
-      <!-- Positions -->
-      <GridItem :i="layout[5].i" :x="layout[5].x" :y="layout[5].y" :w="layout[5].w" :h="layout[5].h">
+      </div>
+      <div class="col-span-12 lg:col-span-6 h-full">
         <Positions />
-      </GridItem>
-    </GridLayout>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.vue-grid-layout {
+/* Fade-in animation for layout */
+.grid {
   transition: opacity 0.3s ease;
   opacity: v-bind(isLayoutReady ? 1 : 0);
-}
-
-:deep(.vue-grid-item) {
-  transition: transform 200ms ease, opacity 0.3s ease;
-}
-
-
-
-:deep(.vue-resizable-handle) {
-  @apply opacity-0 transition-opacity duration-200;
-}
-
-:deep(.vue-grid-item:hover .vue-resizable-handle) {
-  @apply opacity-100;
 }
 </style>
