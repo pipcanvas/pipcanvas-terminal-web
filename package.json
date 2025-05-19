@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/components": "^10.7.0",
-    "@vueuse/core": "^13.2.0",
+    "@vueuse/core": "^13.0.0",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -29,7 +28,6 @@
     "vue-draggable-plus": "^0.3.5",
     "vue-grid-layout": "^3.0.0-beta1",
     "vue-router": "^4.2.5",
-    "vue-virtual-scroller": "^2.0.0-beta.8",
     "vue3-draggable-resizable": "^1.6.5"
   },
   "devDependencies": {
