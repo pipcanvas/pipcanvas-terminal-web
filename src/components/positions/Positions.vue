@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMarketStore } from '@/stores/market'
+import PositionActions from './PositionActions.vue'
 
 const marketStore = useMarketStore()
 const activeTab = ref('positions')
@@ -130,9 +131,19 @@ const orderHistory = ref<Order[]>([
   }
 ])
 
-const closePosition = (symbol: string) => {
+const handleClose = (symbol: string) => {
   // In a real app, this would submit a request to close the position
   alert(`Closing position for ${symbol}`)
+}
+
+const handlePartialClose = (symbol: string, amount: number) => {
+  // In a real app, this would submit a request to partially close the position
+  alert(`Partially closing ${amount} ${symbol}`)
+}
+
+const handleReverse = (symbol: string) => {
+  // In a real app, this would submit a request to reverse the position
+  alert(`Reversing position for ${symbol}`)
 }
 
 const cancelOrder = (id: string) => {
@@ -223,12 +234,13 @@ const cancelOrder = (id: string) => {
                 {{ position.roe >= 0 ? '+' : '' }}{{ position.roe.toFixed(2) }}%
               </td>
               <td class="text-right p-2">
-                <button 
-                  @click="closePosition(position.symbol)"
-                  class="px-2 py-1 text-xs rounded bg-secondary hover:bg-secondary/80"
-                >
-                  Close
-                </button>
+                <PositionActions 
+                  :symbol="position.symbol"
+                  :size="position.size"
+                  @close="handleClose(position.symbol)"
+                  @partial-close="handlePartialClose(position.symbol, $event)"
+                  @reverse="handleReverse(position.symbol)"
+                />
               </td>
             </tr>
             <tr v-if="positions.length === 0">
