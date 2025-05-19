@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
-import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { useTheme } from '@/composables/useTheme'
 
 const isLoading = ref(true)
@@ -31,12 +30,9 @@ onMounted(() => {
     
     <template v-else>
       <AppHeader />
-      <div class="flex flex-1 overflow-hidden">
-        <AppSidebar />
-        <main class="flex-1 overflow-hidden">
-          <router-view />
-        </main>
-      </div>
+      <main class="flex-1 overflow-hidden">
+        <router-view />
+      </main>
     </template>
   </div>
 </template>
