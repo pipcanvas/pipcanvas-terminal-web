@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { Bell } from 'lucide-vue-next'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-  import { PaginationRoot } from 'reka-ui'
+import { PaginationRoot } from 'reka-ui'
 import { PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 
 interface Notification {
