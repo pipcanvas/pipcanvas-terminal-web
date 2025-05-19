@@ -195,7 +195,7 @@ const toggleSetting = (settingId: string) => {
             >
               <component :is="category.icon" class="h-5 w-5 text-muted-foreground" />
               <div class="flex-1 text-left">
-                <div class="text-sm font-medium">{{ category.title }}</div>
+                <div class="text-sm font-medium text-foreground">{{ category.title }}</div>
                 <div class="text-xs text-muted-foreground">{{ category.description }}</div>
               </div>
               <ChevronRight class="h-4 w-4 text-muted-foreground" />
@@ -207,7 +207,7 @@ const toggleSetting = (settingId: string) => {
         <div class="flex-1 p-6">
           <div v-if="selectedCategory" class="space-y-6">
             <div class="space-y-1">
-              <h2 class="text-lg font-semibold">{{ selectedCategory.title }}</h2>
+              <h2 class="text-lg font-semibold text-foreground">{{ selectedCategory.title }}</h2>
               <p class="text-sm text-muted-foreground">{{ selectedCategory.description }}</p>
             </div>
             
@@ -218,7 +218,7 @@ const toggleSetting = (settingId: string) => {
                 class="flex items-start justify-between gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <div class="space-y-1">
-                  <div class="text-sm font-medium">{{ setting.title }}</div>
+                  <div class="text-sm font-medium text-foreground">{{ setting.title }}</div>
                   <div class="text-sm text-muted-foreground">{{ setting.description }}</div>
                 </div>
                 <Button 
