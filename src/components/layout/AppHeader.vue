@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Moon, Sun, User, Settings } from 'lucide-vue-next'
+import { Moon, Sun, User } from 'lucide-vue-next'
 import { useMarketStore } from '@/stores/market'
 import { useTheme } from '@/composables/useTheme'
 import NotificationList from '@/components/notifications/NotificationList.vue'
+import SettingsDialog from '@/components/settings/SettingsDialog.vue'
 
 const marketStore = useMarketStore()
 const { isDark, toggleTheme } = useTheme()
@@ -30,7 +31,7 @@ const { isDark, toggleTheme } = useTheme()
         <Moon v-else class="h-5 w-5" />
       </button>
       
-      <Settings class="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
+      <SettingsDialog />
       
       <div class="flex items-center gap-2 ml-2">
         <div class="h-8 w-8 bg-secondary rounded-full flex items-center justify-center">
