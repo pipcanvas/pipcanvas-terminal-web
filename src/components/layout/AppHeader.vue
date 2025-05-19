@@ -1,3 +1,4 @@
+```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Moon, Sun, User, ChevronDown } from 'lucide-vue-next'
@@ -5,6 +6,7 @@ import { useMarketStore } from '@/stores/market'
 import { useTheme } from '@/composables/useTheme'
 import NotificationList from '@/components/notifications/NotificationList.vue'
 import SettingsDialog from '@/components/settings/SettingsDialog.vue'
+import AssetWatchlist from '@/components/market/AssetWatchlist.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 
@@ -30,6 +32,8 @@ const accountBalance = ref({
         <a href="#" class="text-sm font-medium text-foreground hover:text-primary transition-colors">Markets</a>
         <a href="#" class="text-sm font-medium text-foreground hover:text-primary transition-colors">Tools</a>
       </nav>
+
+      <AssetWatchlist />
     </div>
     
     <div class="flex items-center gap-4">
@@ -76,3 +80,4 @@ const accountBalance = ref({
     </div>
   </header>
 </template>
+```
