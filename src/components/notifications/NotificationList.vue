@@ -109,7 +109,7 @@ const goToPreviousPage = () => {
     <PopoverContent class="w-80">
       <div class="flex flex-col space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="font-semibold">Notifications</h3>
+          <h3 class="font-semibold text-foreground">Notifications</h3>
           <span class="text-xs text-muted-foreground">{{ unreadCount }} unread</span>
         </div>
         
@@ -117,37 +117,42 @@ const goToPreviousPage = () => {
           <div
             v-for="notification in paginatedNotifications"
             :key="notification.id"
-            class="p-2 rounded-lg hover:bg-muted cursor-pointer"
-            :class="{ 'bg-muted/50': !notification.read }"
+            class="p-2 rounded-lg cursor-pointer transition-colors"
+            :class="[
+              notification.read 
+                ? 'hover:bg-muted/50' 
+                : 'bg-muted/50 hover:bg-muted',
+              'dark:hover:bg-muted/20 dark:bg-muted/10'
+            ]"
             @click="markAsRead(notification.id)"
           >
-            <div class="font-medium">{{ notification.title }}</div>
+            <div class="font-medium text-foreground">{{ notification.title }}</div>
             <div class="text-sm text-muted-foreground">{{ notification.message }}</div>
             <div class="text-xs text-muted-foreground mt-1">{{ notification.time }}</div>
           </div>
         </div>
 
-        <div v-if="totalPages > 1" class="flex justify-center pt-2">
+        <div v-if="totalPages > 1" class="flex justify-center pt-2 border-t border-border">
           <PaginationRoot>
-          <PaginationContent>
-            <PaginationPrevious
-              :disabled="currentPage === 1"
-              @click="goToPreviousPage"
-            />
-            <PaginationItem
-              v-for="page in totalPages"
-              :key="page"
-              :is-active="currentPage === page"
-              @click="currentPage = page"
-            >
-              {{ page }}
-            </PaginationItem>
-            <PaginationNext
-              :disabled="currentPage === totalPages"
-              @click="goToNextPage"
-            />
-          </PaginationContent>
-            </PaginationRoot>
+            <PaginationContent>
+              <PaginationPrevious
+                :disabled="currentPage === 1"
+                @click="goToPreviousPage"
+              />
+              <PaginationItem
+                v-for="page in totalPages"
+                :key="page"
+                :is-active="currentPage === page"
+                @click="currentPage = page"
+              >
+                {{ page }}
+              </PaginationItem>
+              <PaginationNext
+                :disabled="currentPage === totalPages"
+                @click="goToNextPage"
+              />
+            </PaginationContent>
+          </PaginationRoot>
         </div>
       </div>
     </PopoverContent>
