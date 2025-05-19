@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useMarketStore } from '@/stores/market'
 import PositionActions from './PositionActions.vue'
+import { Badge } from '@/components/ui/badge'
 
 const marketStore = useMarketStore()
 const activeTab = ref('positions')
@@ -18,19 +19,6 @@ interface Position {
   pnl: number
   pnlPercentage: number
   roe: number
-}
-
-interface Order {
-  id: string
-  symbol: string
-  side: 'buy' | 'sell'
-  type: string
-  price: number
-  amount: number
-  filled: number
-  total: number
-  status: 'open' | 'filled' | 'canceled'
-  time: string
 }
 
 interface PositionHistory {
@@ -228,7 +216,16 @@ const cancelOrder = (id: string) => {
             ? 'bg-secondary text-foreground' 
             : 'text-muted-foreground hover:bg-secondary/50'"
         >
-          Open Positions
+          <div class="flex items-center justify-center gap-2">
+            Open Positions
+            <Badge 
+              v-if="positions.length > 0"
+              variant="secondary"
+              class="ml-1"
+            >
+              {{ positions.length }}
+            </Badge>
+          </div>
         </button>
         <button 
           @click="activeTab = 'position-history'"
@@ -246,7 +243,16 @@ const cancelOrder = (id: string) => {
             ? 'bg-secondary text-foreground' 
             : 'text-muted-foreground hover:bg-secondary/50'"
         >
-          Open Orders
+          <div class="flex items-center justify-center gap-2">
+            Open Orders
+            <Badge 
+              v-if="openOrders.length > 0"
+              variant="secondary"
+              class="ml-1"
+            >
+              {{ openOrders.length }}
+            </Badge>
+          </div>
         </button>
         <button 
           @click="activeTab = 'order-history'"
