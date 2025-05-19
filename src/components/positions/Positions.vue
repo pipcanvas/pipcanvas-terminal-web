@@ -228,7 +228,7 @@ const cancelOrder = (id: string) => {
             ? 'bg-secondary text-foreground' 
             : 'text-muted-foreground hover:bg-secondary/50'"
         >
-          Positions
+          Open Positions
         </button>
         <button 
           @click="activeTab = 'position-history'"
