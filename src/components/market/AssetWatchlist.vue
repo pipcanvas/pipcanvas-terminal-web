@@ -106,13 +106,15 @@ const formatVolume = (volume: number) => {
 </script>
 
 <template>
-  <Popover>
-    <PopoverTrigger asChild>
       <Button variant="ghost" class="gap-2">
         <Star
           class="h-4 w-4"
           :class="currentAsset?.isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'"
         />
+      </Button>
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button variant="ghost" class="gap-2">
         <span class="font-bold text-lg">{{ marketStore.currentSymbol }}</span>
         <ChevronDown class="h-4 w-4 text-muted-foreground" />
       </Button>
