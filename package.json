@@ -9,14 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^10.7.0",
+    "@vueuse/core": "^10.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "concurrently": "^9.1.2",
     "lucide-vue-next": "^0.312.0",
     "pinia": "^2.1.7",
     "radix-vue": "^1.5.3",
-    "reka-ui": "^2.2.0",
+    "reka-ui": "^2.2.1",
     "shadcn-vue": "^2.0.1",
     "svgo": "^3.3.2",
     "tailwind-merge": "^3.3.0",
