@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useMarketStore } from '@/stores/market'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { Slider } from '@/components/ui/slider'
+import { NumberField } from '@/components/ui/number-field'
+import { ChevronDown } from 'lucide-vue-next'
 
 const marketStore = useMarketStore()
 
@@ -13,13 +19,29 @@ const orderTypes = [
   { value: 'stop_limit', label: 'Stop Limit' },
 ]
 
+const timeInForce = ref('GTC')
+const timeInForceOptions = [
+  { value: 'GTC', label: 'Good Till Cancel' },
+  { value: 'IOC', label: 'Immediate or Cancel' },
+  { value: 'FOK', label: 'Fill or Kill' },
+  { value: 'GTX', label: 'Post Only' },
+]
+
 const leverage = ref(10)
+const showLeverageDialog = ref(false)
+const tempLeverage = ref(10)
+
 const orderPrice = ref(marketStore.lastPrice)
 const orderAmount = ref(0.1)
 const availableBalance = ref(12450.32)
 
+// Take Profit & Stop Loss
+const useTakeProfit = ref(false)
+const useStopLoss = ref(false)
+const takeProfitPrice = ref(0)
+const stopLossPrice = ref(0)
+
 // Force orderPrice to update when market price changes
-// This would happen via a proper store in a real application
 const updateOrderPrice = () => {
   if (orderPrice.value === 0) {
     orderPrice.value = marketStore.lastPrice
@@ -27,7 +49,6 @@ const updateOrderPrice = () => {
 }
 
 // For demonstration purposes, update the order price when market price changes
-// In a real app, we would probably want to track the last price separately
 setInterval(updateOrderPrice, 1000)
 
 const orderValue = computed(() => {
@@ -57,16 +78,9 @@ const changeAmountPercentage = (percentage: number) => {
   orderAmount.value = Math.round((maxAmount.value * percentage / 100) * 10000) / 10000
 }
 
-const increaseLeverage = () => {
-  if (leverage.value < 125) {
-    leverage.value++
-  }
-}
-
-const decreaseLeverage = () => {
-  if (leverage.value > 1) {
-    leverage.value--
-  }
+const handleLeverageConfirm = () => {
+  leverage.value = tempLeverage.value
+  showLeverageDialog.value = false
 }
 
 const placeOrder = () => {
@@ -76,7 +90,7 @@ const placeOrder = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col rounded-md border border-border">
+  <div class="h-full w-[400px] flex flex-col rounded-md border border-border">
     <div class="px-3 py-2 border-b border-border">
       <div class="font-medium">Place Order</div>
     </div>
@@ -120,23 +134,13 @@ const placeOrder = () => {
       <!-- Leverage Selection -->
       <div class="flex items-center gap-3">
         <div class="text-sm">Leverage:</div>
-        <div class="flex-1 flex items-center">
-          <button 
-            @click="decreaseLeverage"
-            class="h-8 w-8 flex items-center justify-center bg-secondary rounded-l-md hover:bg-secondary/80"
-          >
-            -
-          </button>
-          <div class="px-4 h-8 flex items-center justify-center border-t border-b border-border bg-background">
-            {{ leverage }}x
-          </div>
-          <button 
-            @click="increaseLeverage"
-            class="h-8 w-8 flex items-center justify-center bg-secondary rounded-r-md hover:bg-secondary/80"
-          >
-            +
-          </button>
-        </div>
+        <Button 
+          variant="outline" 
+          class="flex-1"
+          @click="showLeverageDialog = true"
+        >
+          {{ leverage }}x
+        </Button>
       </div>
       
       <!-- Price Input Field -->
@@ -149,9 +153,8 @@ const placeOrder = () => {
           >
             -
           </button>
-          <input 
+          <NumberField 
             v-model="orderPrice"
-            type="number" 
             class="flex-1 h-10 px-3 bg-secondary/20 border-t border-b border-border focus:outline-none"
           />
           <button 
@@ -166,9 +169,8 @@ const placeOrder = () => {
       <!-- Amount Input Field -->
       <div class="flex flex-col gap-1">
         <label class="text-sm">Amount (BTC)</label>
-        <input 
+        <NumberField 
           v-model="orderAmount"
-          type="number" 
           class="h-10 px-3 bg-secondary/20 border border-border rounded-md focus:outline-none"
         />
         <div class="grid grid-cols-4 gap-1 mt-1">
@@ -181,6 +183,61 @@ const placeOrder = () => {
             {{ percent }}%
           </button>
         </div>
+      </div>
+
+      <!-- Take Profit & Stop Loss -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <input 
+            type="checkbox" 
+            v-model="useTakeProfit"
+            class="rounded border-border"
+          />
+          <label class="text-sm">Take Profit</label>
+          <NumberField 
+            v-if="useTakeProfit"
+            v-model="takeProfitPrice"
+            placeholder="TP Price"
+            class="flex-1 h-8 px-2 bg-secondary/20 border border-border rounded-md"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <input 
+            type="checkbox" 
+            v-model="useStopLoss"
+            class="rounded border-border"
+          />
+          <label class="text-sm">Stop Loss</label>
+          <NumberField 
+            v-if="useStopLoss"
+            v-model="stopLossPrice"
+            placeholder="SL Price"
+            class="flex-1 h-8 px-2 bg-secondary/20 border border-border rounded-md"
+          />
+        </div>
+      </div>
+
+      <!-- Time In Force -->
+      <div class="flex items-center gap-2">
+        <label class="text-sm">Time In Force:</label>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" class="flex-1 justify-between">
+              {{ timeInForceOptions.find(t => t.value === timeInForce)?.label }}
+              <ChevronDown class="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              v-for="option in timeInForceOptions"
+              :key="option.value"
+              @click="timeInForce = option.value"
+            >
+              {{ option.label }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <!-- Order Summary -->
@@ -208,5 +265,55 @@ const placeOrder = () => {
         {{ orderSide === 'buy' ? 'Buy / Long' : 'Sell / Short' }} {{ marketStore.currentSymbol }}
       </button>
     </div>
+
+    <!-- Leverage Dialog -->
+    <Dialog v-model:open="showLeverageDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Adjust Leverage</DialogTitle>
+          <DialogDescription>
+            Adjust the leverage for your position. Higher leverage means higher risk.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div class="py-6 space-y-4">
+          <div class="flex items-center gap-4">
+            <NumberField
+              v-model="tempLeverage"
+              :min="1"
+              :max="125"
+              class="w-24 h-10 px-3 bg-secondary/20 border border-border rounded-md"
+            />
+            <span class="text-xl font-medium">×</span>
+          </div>
+          
+          <Slider
+            v-model="tempLeverage"
+            :min="1"
+            :max="125"
+            :step="1"
+            class="w-full"
+          />
+          
+          <div class="flex justify-between text-sm text-muted-foreground">
+            <span>1×</span>
+            <span>25×</span>
+            <span>50×</span>
+            <span>75×</span>
+            <span>100×</span>
+            <span>125×</span>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" @click="showLeverageDialog = false">
+            Cancel
+          </Button>
+          <Button @click="handleLeverageConfirm">
+            Confirm
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
