@@ -1,6 +1,8 @@
+```vue
 <script setup lang="ts">
-import { ChevronDown } from 'lucide-vue-next'
+import { Star } from 'lucide-vue-next'
 import { useMarketStore } from '@/stores/market'
+import AssetWatchlist from './AssetWatchlist.vue'
 
 const marketStore = useMarketStore()
 </script>
@@ -8,10 +10,7 @@ const marketStore = useMarketStore()
 <template>
   <div class="h-full w-full flex items-center border border-border rounded-md px-4">
     <div class="flex items-center gap-2">
-      <button class="flex items-center gap-1 font-bold text-lg">
-        {{ marketStore.currentSymbol }}
-        <ChevronDown class="h-4 w-4" />
-      </button>
+      <AssetWatchlist />
       
       <div 
         class="text-sm px-2 py-0.5 rounded-sm"
@@ -68,3 +67,4 @@ const marketStore = useMarketStore()
     </div>
   </div>
 </template>
+```

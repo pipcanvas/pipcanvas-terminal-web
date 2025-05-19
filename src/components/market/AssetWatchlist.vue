@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useInfiniteScroll } from '@vueuse/core'
+import { useMarketStore } from '@/stores/market'
 
 interface Asset {
   symbol: string
@@ -15,6 +16,8 @@ interface Asset {
   volume24h: number
   isFavorite: boolean
 }
+
+const marketStore = useMarketStore()
 
 // Sample data - in a real app this would come from an API
 const assets = ref<Asset[]>([
@@ -79,6 +82,11 @@ const toggleFavorite = (symbol: string) => {
   }
 }
 
+const selectAsset = (symbol: string) => {
+  // In a real app, this would update the market store and trigger data fetching
+  marketStore.currentSymbol = symbol
+}
+
 const formatVolume = (volume: number) => {
   if (volume >= 1000000000) {
     return `${(volume / 1000000000).toFixed(2)}B`
@@ -91,19 +99,25 @@ const formatVolume = (volume: number) => {
   }
   return volume.toFixed(2)
 }
+
+// Get current asset
+const currentAsset = computed(() => {
+  return assets.value.find(a => a.symbol === marketStore.currentSymbol)
+})
 </script>
 
 <template>
   <Popover>
     <PopoverTrigger asChild>
-      <Button variant="outline" class="gap-2">
-        BTCUSDT
+      <Button variant="ghost" class="gap-2 px-0">
         <Star
-          class="h-4 w-4 fill-primary text-primary"
+          class="h-4 w-4"
+          :class="currentAsset?.isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'"
         />
+        <span class="font-bold text-lg">{{ marketStore.currentSymbol }}</span>
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-[400px] p-0">
+    <PopoverContent class="w-[400px] p-0 max-h-[calc(100vh-100px)]">
       <!-- Search Bar -->
       <div class="p-2 border-b border-border">
         <div class="relative">
@@ -118,7 +132,7 @@ const formatVolume = (volume: number) => {
       </div>
 
       <!-- Tabs -->
-      <Tabs v-model="activeTab" class="h-[400px] flex flex-col">
+      <Tabs v-model="activeTab" class="flex flex-col">
         <div class="px-2 pt-2">
           <TabsList class="w-full grid grid-cols-2">
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
@@ -147,12 +161,13 @@ const formatVolume = (volume: number) => {
                 <tr 
                   v-for="asset in paginatedAssets" 
                   :key="asset.symbol"
-                  class="hover:bg-muted/50"
+                  class="hover:bg-muted/50 cursor-pointer"
+                  @click="selectAsset(asset.symbol)"
                 >
                   <td class="p-2">
                     <div class="flex items-center gap-2">
                       <button 
-                        @click="toggleFavorite(asset.symbol)"
+                        @click.stop="toggleFavorite(asset.symbol)"
                         class="p-0.5 hover:bg-muted rounded"
                       >
                         <Star
@@ -205,12 +220,13 @@ const formatVolume = (volume: number) => {
                 <tr 
                   v-for="asset in paginatedAssets" 
                   :key="asset.symbol"
-                  class="hover:bg-muted/50"
+                  class="hover:bg-muted/50 cursor-pointer"
+                  @click="selectAsset(asset.symbol)"
                 >
                   <td class="p-2">
                     <div class="flex items-center gap-2">
                       <button 
-                        @click="toggleFavorite(asset.symbol)"
+                        @click.stop="toggleFavorite(asset.symbol)"
                         class="p-0.5 hover:bg-muted rounded"
                       >
                         <Star
