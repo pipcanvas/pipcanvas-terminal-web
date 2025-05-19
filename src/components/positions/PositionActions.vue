@@ -18,6 +18,7 @@ const emit = defineEmits<{
 
 const showCloseDialog = ref(false)
 const showPartialDialog = ref(false)
+const showReverseDialog = ref(false)
 const partialAmount = ref(props.size / 2)
 
 const handleClose = () => {
@@ -31,6 +32,7 @@ const handlePartialClose = () => {
 }
 
 const handleReverse = () => {
+  showReverseDialog.value = false
   emit('reverse')
 }
 </script>
@@ -91,10 +93,24 @@ const handleReverse = () => {
           </DialogContent>
         </Dialog>
 
-        <!-- Reverse Position -->
-        <Button variant="ghost" class="w-full justify-start" @click="handleReverse">
-          Reverse
-        </Button>
+        <!-- Reverse Position Dialog -->
+        <Dialog v-model:open="showReverseDialog">
+          <DialogTrigger asChild>
+            <Button variant="ghost" class="w-full justify-start">Reverse</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Reverse Position</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to reverse your {{ symbol }} position? This will close your current position and open a new one in the opposite direction.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" @click="showReverseDialog = false">Cancel</Button>
+              <Button variant="default" @click="handleReverse">Confirm</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </PopoverContent>
   </Popover>
