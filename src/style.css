@@ -1,5 +1,5 @@
 @import "tailwindcss";
-layer("theme");
+layer(theme);
 
 @layer base {
   :root {
