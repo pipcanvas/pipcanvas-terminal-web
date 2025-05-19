@@ -51,21 +51,14 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-
-  body {
-  font-feature-settings: "rlig" 1, "calt" 1;
 }
+
+body {
+  @apply bg-background text-foreground;
+  font-feature-settings: "rlig" 1, "calt" 1;
 }
 
 @layer utilities {
-  body,
-  html {
-    --font-sans:
-      'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-      'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-      'Noto Color Emoji';
-  }
-  
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -85,7 +78,7 @@
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply rounded-full;
+    @apply bg-muted rounded-full;
   }
   
   .bg-gain-gradient {
