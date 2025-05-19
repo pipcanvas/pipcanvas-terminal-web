@@ -28,9 +28,7 @@
     "vue-grid-layout": "^3.0.0-beta1",
     "vue-router": "^4.2.5",
     "vue3-draggable-resizable": "^1.6.5",
-    "vuedraggable": "^4.1.0",
-    "@radix-ui/vue-slider": "^2.0.0",
-    "@radix-ui/vue-dropdown-menu": "^2.0.0"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
