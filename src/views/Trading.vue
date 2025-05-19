@@ -92,18 +92,8 @@ const onLayoutUpdated = (newLayout: any) => {
 :deep(.vue-grid-item) {
   transition: transform 200ms ease, opacity 0.3s ease;
 }
-/* 
-:deep(.vue-grid-item.vue-grid-placeholder) {
-  @apply bg-primary/20 rounded-lg border-2 border-primary/50;
-} */
 
-/* :deep(.vue-grid-item:not(.vue-grid-placeholder)) {
-  @apply rounded-lg;
-} */
 
-/* :deep(.vue-grid-item.vue-draggable-dragging) {
-  @apply shadow-lg z-50;
-} */
 
 :deep(.vue-resizable-handle) {
   @apply opacity-0 transition-opacity duration-200;
