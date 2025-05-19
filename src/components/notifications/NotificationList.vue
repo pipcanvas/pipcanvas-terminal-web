@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import { PaginationRoot } from 'reka-ui'
 import { PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
+import { useTheme } from '@/composables/useTheme'
 
 interface Notification {
   id: number
@@ -91,6 +92,8 @@ const goToPreviousPage = () => {
     currentPage.value--
   }
 }
+
+const { isDark } = useTheme()
 </script>
 
 <template>
@@ -106,7 +109,7 @@ const goToPreviousPage = () => {
         </span>
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-80">
+    <PopoverContent :class="['w-80', isDark ? 'dark' : '']">
       <div class="flex flex-col space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-foreground">Notifications</h3>
