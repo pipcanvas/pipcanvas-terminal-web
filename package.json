@@ -18,7 +18,7 @@
     "lucide-vue-next": "^0.312.0",
     "pinia": "^2.1.7",
     "reka-ui": "^2.2.1",
-    "shadcn-vue": "^2.0.1",
+    "shadcn-vue": "^2.1.0",
     "svgo": "^3.3.2",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
