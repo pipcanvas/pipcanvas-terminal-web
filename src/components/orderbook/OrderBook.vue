@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ArrowDown, ArrowUp, BarChart2 } from 'lucide-vue-next'
@@ -184,4 +183,3 @@ const changeGrouping = (value: number) => {
     </div>
   </div>
 </template>
-```

@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import TradingViewChart from '@/components/chart/TradingViewChart.vue'
@@ -64,4 +63,3 @@ onMounted(() => {
   opacity: v-bind(isLayoutReady ? 1 : 0);
 }
 </style>
-```

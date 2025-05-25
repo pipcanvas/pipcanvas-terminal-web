@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import OrderBook from '@/components/orderbook/OrderBook.vue'
@@ -28,4 +27,3 @@ const activeTab = ref('orderbook')
     </Tabs>
   </div>
 </template>
-```

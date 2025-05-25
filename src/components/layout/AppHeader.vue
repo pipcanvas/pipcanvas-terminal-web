@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Moon, Sun, User, ChevronDown } from 'lucide-vue-next'
@@ -77,4 +76,3 @@ const accountBalance = ref({
     </div>
   </header>
 </template>
-```

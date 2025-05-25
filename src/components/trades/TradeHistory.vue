@@ -1,4 +1,3 @@
-```vue
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useMarketStore } from '@/stores/market'
@@ -101,4 +100,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-```
