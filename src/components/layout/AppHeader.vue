@@ -1,47 +1,79 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Moon, Sun, BellRing, User, Settings } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { Moon, Sun, User, ChevronDown, Settings as SettingsIcon, Bell as BellIcon } from 'lucide-vue-next' // Renamed to avoid conflict
 import { useMarketStore } from '@/stores/market'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { useTheme } from '@/composables/useTheme'
+import NotificationList from '@/components/notifications/NotificationList.vue'
+import SettingsDialog from '@/components/settings/SettingsDialog.vue'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 const marketStore = useMarketStore()
-const isDarkMode = ref(true)
-const notifications = ref([
-  { id: 1, title: 'Position Closed', message: 'BTCUSDT long position closed at $66,432.50', time: '2 mins ago' },
-  { id: 2, title: 'Order Filled', message: 'Limit buy order filled: 0.1 BTC at $65,250.00', time: '5 mins ago' },
-  { id: 3, title: 'Margin Call Warning', message: 'Your position is approaching liquidation price', time: '10 mins ago' },
-  { id: 4, title: 'New Feature', message: 'Try our new advanced order types', time: '1 hour ago' },
-  { id: 5, title: 'Welcome Bonus', message: 'You received 100 USDT trading bonus', time: '2 hours ago' },
-  { id: 6, title: 'Price Alert', message: 'BTC reached your target price of $67,000', time: '3 hours ago' }
-])
-const currentPage = ref(1)
-const itemsPerPage = 5
+const { isDark, toggleTheme } = useTheme()
 
-const showNotifications = ref(false)
-const showSettings = ref(false)
-
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value
-  document.documentElement.classList.toggle('dark')
-}
-
-const paginatedNotifications = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  return notifications.value.slice(start, start + itemsPerPage)
+// Account balance popover data
+const accountBalance = ref({
+  total: 12450.32,
+  available: 8214.05,
+  inOrders: 4236.27
 })
 
-const totalPages = computed(() => Math.ceil(notifications.value.length / itemsPerPage))
+// User accounts data for dropdown
+interface UserAccount {
+  id: string
+  accountNumber: string
+  type: 'Live' | 'Demo' | 'Eval' | 'Funded'
+  balance: number
+  status: 'Active' | 'Inactive' | 'Breached'
+}
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
+const userAccounts = ref<UserAccount[]>([
+  { id: '1', accountNumber: 'ACC123456', type: 'Live', balance: 10050.75, status: 'Active' },
+  { id: '2', accountNumber: 'ACC789012', type: 'Demo', balance: 50000.00, status: 'Active' },
+  { id: '3', accountNumber: 'ACC345678', type: 'Eval', balance: 100000.00, status: 'Inactive' },
+  { id: '4', accountNumber: 'ACC901234', type: 'Funded', balance: 25000.00, status: 'Active' },
+  { id: '5', accountNumber: 'ACC567890', type: 'Live', balance: 5230.10, status: 'Breached' },
+])
+
+const getStatusColorClass = (status: UserAccount['status']): string => {
+  switch (status) {
+    case 'Active': return 'bg-green-500'
+    case 'Inactive': return 'bg-gray-400 dark:bg-gray-600'
+    case 'Breached': return 'bg-red-500'
+    default: return 'bg-gray-300'
   }
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
+const getAccountTypeBadgeVariant = (type: UserAccount['type']): 'default' | 'secondary' | 'outline' => {
+  switch (type) {
+    case 'Live': return 'default' // Assumed to be primary-styled
+    case 'Funded': return 'secondary'
+    case 'Demo': return 'outline'
+    case 'Eval': return 'default' // Will use custom class for specific styling
+    default: return 'default'
   }
+}
+
+const getAccountTypeBadgeCustomClass = (type: UserAccount['type']): string => {
+  if (type === 'Eval') {
+    // Using a muted/tertiary-like style for Eval
+    return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/50 dark:text-blue-400 dark:border-blue-800'
+  }
+  return ''
+}
+
+const formatCurrency = (value: number) => {
+  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 }
 </script>
 
@@ -58,166 +90,114 @@ const prevPage = () => {
       </nav>
     </div>
     
-    <div class="flex items-center gap-4">
-      <!-- Notifications -->
-      <div class="relative">
-        <button 
-          @click="showNotifications = !showNotifications"
-          class="relative"
-        >
-          <BellRing class="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-          <span v-if="notifications.length > 0" class="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold">
-            {{ notifications.length }}
-          </span>
-        </button>
-        
-        <!-- Notifications Popover -->
-        <div 
-          v-if="showNotifications"
-          class="absolute right-0 top-full mt-2 w-80 bg-background border border-border rounded-md shadow-lg z-50"
-        >
-          <div class="p-4">
-            <h3 class="font-semibold mb-2">Notifications</h3>
-            <div class="space-y-2">
-              <div 
-                v-for="notification in paginatedNotifications" 
-                :key="notification.id"
-                class="p-2 hover:bg-secondary/50 rounded-md"
-              >
-                <div class="font-medium text-sm">{{ notification.title }}</div>
-                <div class="text-sm text-muted-foreground">{{ notification.message }}</div>
-                <div class="text-xs text-muted-foreground mt-1">{{ notification.time }}</div>
-              </div>
+    <div class="flex items-center gap-2 sm:gap-4">
+      <!-- Account Balance Popover -->
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" class="hidden md:flex items-center gap-2">
+            <div class="text-left">
+              <div class="text-xs text-muted-foreground">Total Balance</div>
+              <div class="font-medium">${{ accountBalance.total.toLocaleString() }}</div>
             </div>
-            
-            <!-- Pagination -->
-            <div class="flex justify-between items-center mt-4">
-              <button 
-                @click="prevPage"
-                class="px-2 py-1 text-xs rounded hover:bg-secondary disabled:opacity-50"
-                :disabled="currentPage === 1"
-              >
-                Previous
-              </button>
-              <span class="text-sm">{{ currentPage }} / {{ totalPages }}</span>
-              <button 
-                @click="nextPage"
-                class="px-2 py-1 text-xs rounded hover:bg-secondary disabled:opacity-50"
-                :disabled="currentPage === totalPages"
-              >
-                Next
-              </button>
+            <ChevronDown class="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-64" :class="isDark ? 'dark' : ''">
+          <div class="space-y-3 p-1">
+            <div>
+              <div class="text-xs text-muted-foreground">Available Balance</div>
+              <div class="text-lg font-semibold">${{ accountBalance.available.toLocaleString() }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted-foreground">In Orders</div>
+              <div class="text-lg font-semibold">${{ accountBalance.inOrders.toLocaleString() }}</div>
             </div>
           </div>
-        </div>
-      </div>
+        </PopoverContent>
+      </Popover>
+
+      <NotificationList />
       
-      <!-- Theme Toggle -->
-      <button @click="toggleTheme" class="p-1 rounded-md hover:bg-secondary transition-colors">
-        <Sun v-if="isDarkMode" class="h-5 w-5" />
+      <Button variant="ghost" size="icon" @click="toggleTheme" class="p-1 rounded-md hover:bg-secondary transition-colors">
+        <Sun v-if="isDark" class="h-5 w-5" />
         <Moon v-else class="h-5 w-5" />
-      </button>
+      </Button>
       
-      <!-- Settings -->
-      <Settings 
-        @click="showSettings = true"
-        class="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" 
-      />
+      <SettingsDialog />
       
-      <!-- Settings Dialog -->
-      <Dialog v-model:open="showSettings">
-        <DialogContent class="max-w-3xl">
-          <template #title>
-            <div class="text-lg font-semibold mb-4">Settings</div>
-          </template>
-          
-          <div class="flex">
-            <!-- Settings Categories -->
-            <div class="w-48 border-r border-border pr-4">
-              <div class="space-y-1">
-                <button class="w-full text-left px-2 py-1.5 rounded-md bg-secondary text-sm font-medium">
-                  General
-                </button>
-                <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-secondary/50 text-sm">
-                  Trading
-                </button>
-                <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-secondary/50 text-sm">
-                  Chart
-                </button>
-                <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-secondary/50 text-sm">
-                  Interface
-                </button>
-                <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-secondary/50 text-sm">
-                  API
-                </button>
-              </div>
+      <!-- User Account Dropdown -->
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" class="flex items-center gap-2 px-2 py-1 h-auto focus-visible:ring-0 focus-visible:ring-offset-0">
+            <div class="h-8 w-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground">
+              <User class="h-5 w-5" />
             </div>
-            
-            <!-- Settings Content -->
-            <div class="flex-1 pl-6">
-              <div class="space-y-6">
-                <div>
-                  <h3 class="text-sm font-medium mb-2">Theme</h3>
-                  <div class="flex items-center space-x-2">
-                    <button 
-                      class="px-3 py-1.5 rounded-md text-sm"
-                      :class="isDarkMode ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'"
-                      @click="isDarkMode = true"
-                    >
-                      Dark
-                    </button>
-                    <button 
-                      class="px-3 py-1.5 rounded-md text-sm"
-                      :class="!isDarkMode ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'"
-                      @click="isDarkMode = false"
-                    >
-                      Light
-                    </button>
-                  </div>
+            <span class="text-sm font-medium hidden md:block">Account</span>
+            <ChevronDown class="h-4 w-4 text-muted-foreground ml-1 hidden md:block" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-80 md:w-96" :class="isDark ? 'dark' : ''" align="end">
+          <DropdownMenuLabel class="font-normal">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm font-medium leading-none">John Doe</p>
+              <p class="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
+            <DropdownMenuItem 
+              v-for="account in userAccounts" 
+              :key="account.id"
+              class="focus:bg-accent/80 cursor-pointer"
+              @select.prevent
+            >
+              <div class="flex justify-between items-center w-full py-1">
+                <div class="flex items-center gap-2">
+									<div :class="['w-2.5 h-2.5 rounded-full', getStatusColorClass(account.status)]" />
+									<div>
+                  <div class="text-sm font-medium text-foreground">{{ account.accountNumber }}</div>
+                  <div class="text-xs text-muted-foreground">{{ formatCurrency(account.balance) }}</div>
+									</div>
                 </div>
-                
-                <div>
-                  <h3 class="text-sm font-medium mb-2">Default Order Type</h3>
-                  <select class="w-full bg-secondary/20 border border-border rounded-md px-3 py-1.5 text-sm">
-                    <option>Limit</option>
-                    <option>Market</option>
-                    <option>Stop</option>
-                    <option>Stop Limit</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <h3 class="text-sm font-medium mb-2">Default Leverage</h3>
-                  <input 
-                    type="number" 
-                    class="w-full bg-secondary/20 border border-border rounded-md px-3 py-1.5 text-sm"
-                    value="10"
-                  />
-                </div>
-                
-                <div>
-                  <h3 class="text-sm font-medium mb-2">Position Mode</h3>
-                  <div class="flex items-center space-x-2">
-                    <button class="px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground">
-                      One-way
-                    </button>
-                    <button class="px-3 py-1.5 rounded-md text-sm hover:bg-secondary">
-                      Hedge
-                    </button>
-                  </div>
+                <div class="flex items-center gap-2">
+                  <Badge 
+                    :variant="getAccountTypeBadgeVariant(account.type)"
+                    :class="cn('font-semibold text-xs px-1.5 py-0.5', getAccountTypeBadgeCustomClass(account.type))"
+                  >
+                    {{ account.type }}
+                  </Badge>
                 </div>
               </div>
-            </div>
+            </DropdownMenuItem>
           </div>
-        </DialogContent>
-      </Dialog>
-      
-      <div class="flex items-center gap-2 ml-2">
-        <div class="h-8 w-8 bg-secondary rounded-full flex items-center justify-center">
-          <User class="h-5 w-5" />
-        </div>
-        <span class="text-sm font-medium hidden md:block">Account</span>
-      </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem class="focus:bg-accent/80 cursor-pointer">
+            <SettingsIcon class="mr-2 h-4 w-4" />
+            <span>Account Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem class="focus:bg-accent/80 cursor-pointer text-red-500 dark:text-red-400 focus:text-red-600 dark:focus:text-red-500 focus:bg-red-500/10">
+            <!-- Log out icon if available, or just text -->
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   </header>
 </template>
+
+<style scoped>
+/* For custom scrollbar in dropdown if needed */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+</style>

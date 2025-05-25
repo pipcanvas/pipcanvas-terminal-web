@@ -13,6 +13,7 @@ export const useMarketStore = defineStore('market', () => {
   const indexPrice = ref(66430.25)
   const fundingRate = ref(0.0012)
   const nextFundingTime = ref('05:32:11')
+  const favorites = ref(new Set(['BTCUSDT', 'ETHUSDT', 'SOLUSDT']))
   
   // Market data initialization
   const initMarketData = () => {
@@ -41,6 +42,18 @@ export const useMarketStore = defineStore('market', () => {
     // Clean up interval on app unmount
     // In a real app, we would need to handle this properly
   }
+
+  const toggleFavorite = (symbol: string) => {
+    if (favorites.value.has(symbol)) {
+      favorites.value.delete(symbol)
+    } else {
+      favorites.value.add(symbol)
+    }
+  }
+
+  const isFavorite = (symbol: string) => {
+    return favorites.value.has(symbol)
+  }
   
   // Export store properties and methods
   return {
@@ -54,6 +67,9 @@ export const useMarketStore = defineStore('market', () => {
     indexPrice,
     fundingRate,
     nextFundingTime,
-    initMarketData
+    favorites,
+    initMarketData,
+    toggleFavorite,
+    isFavorite
   }
 })

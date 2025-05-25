@@ -36,6 +36,7 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
+          background: "hsl(var(--muted))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -49,16 +50,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
+        gain: {
+          DEFAULT: "hsl(var(--gain))",
+          light: "hsl(var(--gain-light))",
+          dark: "hsl(var(--gain-dark))",
         },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
+        loss: {
+          DEFAULT: "hsl(var(--loss))",
+          light: "hsl(var(--loss-light))",
+          dark: "hsl(var(--loss-dark))",
         },
-        gain: "hsl(var(--gain))",
-        loss: "hsl(var(--loss))",
       },
       borderRadius: {
         lg: "var(--radius)",

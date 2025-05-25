@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useMarketStore } from '@/stores/market'
+import PositionActions from './PositionActions.vue'
+import { Badge } from '@/components/ui/badge'
 
 const marketStore = useMarketStore()
 const activeTab = ref('positions')
@@ -19,17 +21,20 @@ interface Position {
   roe: number
 }
 
-interface Order {
+interface PositionHistory {
   id: string
   symbol: string
-  side: 'buy' | 'sell'
-  type: string
-  price: number
-  amount: number
-  filled: number
-  total: number
-  status: 'open' | 'filled' | 'canceled'
-  time: string
+  side: 'long' | 'short'
+  size: number
+  leverage: number
+  entryPrice: number
+  closePrice: number
+  pnl: number
+  pnlPercentage: number
+  roe: number
+  openTime: string
+  closeTime: string
+  duration: string
 }
 
 // Sample positions data
@@ -62,8 +67,57 @@ const positions = ref<Position[]>([
   }
 ])
 
+// Sample position history data
+const positionHistory = ref<PositionHistory[]>([
+  {
+    id: 'PH001',
+    symbol: 'BTCUSDT',
+    side: 'long',
+    size: 0.5,
+    leverage: 10,
+    entryPrice: 62150.25,
+    closePrice: 64532.50,
+    pnl: 1191.125,
+    pnlPercentage: 3.83,
+    roe: 38.3,
+    openTime: '2024-03-15 09:30:25',
+    closeTime: '2024-03-15 14:45:12',
+    duration: '5h 15m'
+  },
+  {
+    id: 'PH002',
+    symbol: 'ETHUSDT',
+    side: 'short',
+    size: 2.5,
+    leverage: 5,
+    entryPrice: 3550.75,
+    closePrice: 3489.25,
+    pnl: 153.75,
+    pnlPercentage: 1.73,
+    roe: 8.65,
+    openTime: '2024-03-15 11:20:15',
+    closeTime: '2024-03-15 13:15:45',
+    duration: '1h 55m'
+  },
+  {
+    id: 'PH003',
+    symbol: 'SOLUSDT',
+    side: 'long',
+    size: 15,
+    leverage: 3,
+    entryPrice: 125.50,
+    closePrice: 118.75,
+    pnl: -101.25,
+    pnlPercentage: -5.37,
+    roe: -16.11,
+    openTime: '2024-03-15 08:45:30',
+    closeTime: '2024-03-15 12:30:15',
+    duration: '3h 45m'
+  }
+])
+
 // Sample open orders data
-const openOrders = ref<Order[]>([
+const openOrders = ref([
   {
     id: '125463892',
     symbol: 'BTCUSDT',
@@ -91,7 +145,7 @@ const openOrders = ref<Order[]>([
 ])
 
 // Sample order history data
-const orderHistory = ref<Order[]>([
+const orderHistory = ref([
   {
     id: '125463890',
     symbol: 'ETHUSDT',
@@ -130,9 +184,19 @@ const orderHistory = ref<Order[]>([
   }
 ])
 
-const closePosition = (symbol: string) => {
+const handleClose = (symbol: string) => {
   // In a real app, this would submit a request to close the position
   alert(`Closing position for ${symbol}`)
+}
+
+const handlePartialClose = (symbol: string, amount: number) => {
+  // In a real app, this would submit a request to partially close the position
+  alert(`Partially closing ${amount} ${symbol}`)
+}
+
+const handleReverse = (symbol: string) => {
+  // In a real app, this would submit a request to reverse the position
+  alert(`Reversing position for ${symbol}`)
 }
 
 const cancelOrder = (id: string) => {
@@ -152,7 +216,24 @@ const cancelOrder = (id: string) => {
             ? 'bg-secondary text-foreground' 
             : 'text-muted-foreground hover:bg-secondary/50'"
         >
-          Positions
+          <div class="flex items-center justify-center gap-2">
+            Open Positions
+            <Badge 
+              v-if="positions.length > 0"
+              :variant="activeTab === 'positions' ? 'primary' : 'secondary'"
+            >
+              {{ positions.length }}
+            </Badge>
+          </div>
+        </button>
+        <button 
+          @click="activeTab = 'position-history'"
+          class="flex-1 py-1 text-sm font-medium rounded transition-colors"
+          :class="activeTab === 'position-history' 
+            ? 'bg-secondary text-foreground' 
+            : 'text-muted-foreground hover:bg-secondary/50'"
+        >
+          Position History
         </button>
         <button 
           @click="activeTab = 'open-orders'"
@@ -161,7 +242,15 @@ const cancelOrder = (id: string) => {
             ? 'bg-secondary text-foreground' 
             : 'text-muted-foreground hover:bg-secondary/50'"
         >
-          Open Orders
+          <div class="flex items-center justify-center gap-2">
+            Open Orders
+            <Badge 
+              v-if="openOrders.length > 0"
+              :variant="activeTab === 'open-orders' ? 'primary' : 'secondary'"
+            >
+              {{ openOrders.length }}
+            </Badge>
+          </div>
         </button>
         <button 
           @click="activeTab = 'order-history'"
@@ -223,17 +312,77 @@ const cancelOrder = (id: string) => {
                 {{ position.roe >= 0 ? '+' : '' }}{{ position.roe.toFixed(2) }}%
               </td>
               <td class="text-right p-2">
-                <button 
-                  @click="closePosition(position.symbol)"
-                  class="px-2 py-1 text-xs rounded bg-secondary hover:bg-secondary/80"
-                >
-                  Close
-                </button>
+                <PositionActions 
+                  :symbol="position.symbol"
+                  :size="position.size"
+                  @close="handleClose(position.symbol)"
+                  @partial-close="handlePartialClose(position.symbol, $event)"
+                  @reverse="handleReverse(position.symbol)"
+                />
               </td>
             </tr>
             <tr v-if="positions.length === 0">
               <td colspan="7" class="text-center p-4 text-muted-foreground">
                 No open positions
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Position History Tab -->
+      <div v-else-if="activeTab === 'position-history'" class="h-full w-full overflow-auto scrollbar-thin">
+        <table class="w-full">
+          <thead class="text-xs text-muted-foreground sticky top-0 bg-background">
+            <tr>
+              <th class="font-normal text-left p-2">Symbol</th>
+              <th class="font-normal text-left p-2">Size</th>
+              <th class="font-normal text-right p-2">Entry</th>
+              <th class="font-normal text-right p-2">Close</th>
+              <th class="font-normal text-right p-2">PNL</th>
+              <th class="font-normal text-right p-2">ROE</th>
+              <th class="font-normal text-right p-2">Duration</th>
+              <th class="font-normal text-right p-2">Close Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="position in positionHistory" 
+              :key="position.id"
+              class="hover:bg-secondary/30 text-sm"
+            >
+              <td class="p-2">
+                <div class="flex items-center gap-1">
+                  <span 
+                    class="w-2 h-2 rounded-full"
+                    :class="position.side === 'long' ? 'bg-gain' : 'bg-loss'"
+                  ></span>
+                  <span>{{ position.symbol }}</span>
+                  <span class="text-xs text-muted-foreground">{{ position.leverage }}x</span>
+                </div>
+              </td>
+              <td class="p-2">{{ position.size }}</td>
+              <td class="text-right p-2">{{ position.entryPrice.toFixed(2) }}</td>
+              <td class="text-right p-2">{{ position.closePrice.toFixed(2) }}</td>
+              <td
+                class="text-right p-2"
+                :class="position.pnl >= 0 ? 'text-gain' : 'text-loss'"
+              >
+                ${{ position.pnl.toFixed(2) }}
+                <span class="text-xs block">{{ position.pnl >= 0 ? '+' : '' }}{{ position.pnlPercentage.toFixed(2) }}%</span>
+              </td>
+              <td
+                class="text-right p-2"
+                :class="position.roe >= 0 ? 'text-gain' : 'text-loss'"
+              >
+                {{ position.roe >= 0 ? '+' : '' }}{{ position.roe.toFixed(2) }}%
+              </td>
+              <td class="text-right p-2 text-muted-foreground">{{ position.duration }}</td>
+              <td class="text-right p-2 text-muted-foreground">{{ position.closeTime }}</td>
+            </tr>
+            <tr v-if="positionHistory.length === 0">
+              <td colspan="8" class="text-center p-4 text-muted-foreground">
+                No position history
               </td>
             </tr>
           </tbody>
