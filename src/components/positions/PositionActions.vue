@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { MoreVertical } from 'lucide-vue-next'
+import { useTheme } from '@/composables/useTheme'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+
+const { isDark } = useTheme()
 
 const props = defineProps<{
   symbol: string
@@ -44,16 +47,16 @@ const handleReverse = () => {
         <MoreVertical class="h-4 w-4" />
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-40">
+    <PopoverContent class="w-40" :class="isDark ? 'dark' : ''">
       <div class="flex flex-col space-y-1">
         <!-- Close Position Dialog -->
         <Dialog v-model:open="showCloseDialog">
           <DialogTrigger asChild>
             <Button variant="ghost" class="w-full justify-start">Close</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent :class="isDark ? 'dark' : ''">
             <DialogHeader>
-              <DialogTitle>Close Position</DialogTitle>
+              <DialogTitle class="text-foreground">Close Position</DialogTitle>
               <DialogDescription>
                 Are you sure you want to close your {{ symbol }} position?
               </DialogDescription>
@@ -70,9 +73,9 @@ const handleReverse = () => {
           <DialogTrigger asChild>
             <Button variant="ghost" class="w-full justify-start">Partial Close</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent :class="isDark ? 'dark' : ''">
             <DialogHeader>
-              <DialogTitle>Partial Close</DialogTitle>
+              <DialogTitle class="text-foreground">Partial Close</DialogTitle>
               <DialogDescription>
                 Enter the amount you want to close
               </DialogDescription>
@@ -98,9 +101,9 @@ const handleReverse = () => {
           <DialogTrigger asChild>
             <Button variant="ghost" class="w-full justify-start">Reverse</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent :class="isDark ? 'dark' : ''">
             <DialogHeader>
-              <DialogTitle>Reverse Position</DialogTitle>
+              <DialogTitle class="text-foreground">Reverse Position</DialogTitle>
               <DialogDescription>
                 Are you sure you want to reverse your {{ symbol }} position? This will close your current position and open a new one in the opposite direction.
               </DialogDescription>
