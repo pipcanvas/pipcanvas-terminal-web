@@ -1,9 +1,9 @@
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Settings, Bell, Volume2, AlertTriangle, Eye, LineChart, Wallet, Calculator, ChevronRight } from 'lucide-vue-next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch' // Import Switch component
 import { useTheme } from '@/composables/useTheme'
 
 const { isDark } = useTheme()
@@ -158,11 +158,11 @@ const categories = ref<SettingCategory[]>([
 
 const selectedCategory = ref<SettingCategory | null>(null)
 
-const toggleSetting = (settingId: string) => {
+const toggleSetting = (settingId: string, checked: boolean) => { // Modified to accept checked state
   categories.value.forEach(category => {
     const setting = category.settings.find(s => s.id === settingId)
     if (setting) {
-      setting.value = !setting.value
+      setting.value = checked // Set the value directly
     }
   })
 }
@@ -222,17 +222,11 @@ const toggleSetting = (settingId: string) => {
                   <div class="text-sm font-medium text-foreground">{{ setting.title }}</div>
                   <div class="text-sm text-muted-foreground">{{ setting.description }}</div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  :class="[
-                    setting.value ? 'bg-primary text-primary-foreground hover:bg-primary/90' : '',
-                    'transition-colors'
-                  ]"
-                  @click="toggleSetting(setting.id)"
-                >
-                  {{ setting.value ? 'Enabled' : 'Disabled' }}
-                </Button>
+                <!-- Replaced Button with Switch -->
+                <Switch
+                  :checked="setting.value"
+                  @update:checked="(checked) => toggleSetting(setting.id, checked)"
+                />
               </div>
             </div>
           </div>
