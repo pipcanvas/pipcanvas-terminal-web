@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { Settings, Bell, Volume2, AlertTriangle, Eye, LineChart, Wallet, Calculator, ChevronRight } from 'lucide-vue-next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
+import { Switch } from '@/components/ui/switch' // Import Switch component
 import { useTheme } from '@/composables/useTheme'
 
 const { isDark } = useTheme()
